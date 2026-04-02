@@ -1,5 +1,4 @@
 import random
-import sys
 
 from nltk.chat.util import Chat, reflections
 
@@ -25,6 +24,13 @@ listaJogos = {
     "Animal Crossing: New Horizons": ["Simulação", "Mundo aberto", "Social"],
 }
 
+def get_generos_jogo(jogo):
+    keys = list(listaJogos.keys())
+    for key in keys:
+        if key.lower() == jogo.lower():
+            return listaJogos[key]
+    return None
+
 def recomendar_jogo_por_genero(genero):
     print(f"Recomendando jogo do gênero: {genero}")
     jogos_recomendados = []
@@ -49,12 +55,18 @@ pares = [
     (r"qual é o seu nome?", [
         "Meu nome é GameBot."
     ]),
-    (r"qual é a sua função? | o que você faz?", [
+    (r"qual é a sua função?| o que você faz?", [
         "Eu sou um chatbot que ajuda a escolher jogos da sua preferência.",
         "Posso recomendar jogos com base nos seus gostos e interesses."
     ]),
-    (r"meu nome é (.*). baseado em meu nome, me indique um jogo", [
-        recomendar_jogo()+". Você gostaria de uma recomendação personalizada com base em seus gostos?",
+    (r"quais são os gêneros de jogos que você conhece?", [
+        "Eu conheço muitos gêneros de jogos, como ação, aventura, RPG, FPS, estratégia, simulação, entre outros."
+    ]),
+    (r"meu nome é (.*), baseado em meu nome, me indique um jogo", [
+        recomendar_jogo()+". Você gostaria de uma recomendação personalizada com base em seus gostos, %1?",
+    ]),
+    (r"me fale mais sobre o jogo (.*)| conte mais sobre o jogo (.*)| qual é o gênero do jogo (.*)?", [
+        "__JOGO__%1",
     ]),
     (r"sim, me recomende um jogo de (.*)", [
         "__GENERO__%1",
@@ -105,6 +117,14 @@ def iniciar_chat():
                 resposta = f"Eu recomendo o jogo '{jogo}'."
             else:
                 resposta = "Não tenho nenhum jogo com esse gênero"
+        
+        if resposta and resposta.startswith("__JOGO__"):
+            jogo = resposta.replace("__JOGO__", "", 1).strip()
+            generos = get_generos_jogo(jogo)
+            if generos:
+                resposta = f"O jogo '{jogo}' pertence aos gêneros: {', '.join(generos)}."
+            else:
+                resposta = "Não tenho informações sobre esse jogo."
 
         print("ChatBot:", resposta)
 

@@ -12,7 +12,7 @@ Windows:
 `venv\Scripts\activate`
 
 ## install dependencies through requirements
-pip install -r requirements.txt
+source venv/bin/activate && pip install -r requirements.txt
 
 ## run
 source venv/bin/activate && python ./index.py
